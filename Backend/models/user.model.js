@@ -16,6 +16,13 @@ const userSchema = new mongoose.Schema({
         }
 
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        minLength: [5, 'Email must be at least 5 characters long']
+
+    },
     password: {
         type: String,
         required: true,
@@ -29,7 +36,7 @@ const userSchema = new mongoose.Schema({
 
 // creating custom methods on userSchema
 userSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
     return token;
 }
 
