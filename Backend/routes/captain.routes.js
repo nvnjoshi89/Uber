@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const captainController = require('../controllers/captain.controller');
+const authMiddleware = require('../middlewares/auth.middleware');
 
 // captain register routes
 router.post('/register', [
@@ -13,5 +14,18 @@ router.post('/register', [
     body('vechile.capacity').isInt().withMessage('Capacity must at least 1'),
     body('vechile.vechileType').isIn(['car', 'motorcyle', 'auto']).withMessage('vehicle type must be car, motorcyle or auto'),
 ], captainController.registerCaptain)
+
+// login router
+router.post('/login', [
+    body('email').isEmail().withMessage('Invalid Email'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+], captainController.loginCaptain)
+
+
+// captain profile
+router.get('/profile', authMiddleware.authCaptain, captainController.getCaptainProfile)
+
+// captain logout
+router.get('/logout', authMiddleware.authCaptain, captainController.logoutCaptain)
 
 module.exports = router
