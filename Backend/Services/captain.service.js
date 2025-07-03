@@ -14,10 +14,10 @@ const captainModel = require('../models/captain.model');
 // // 🔽 With destructuring:
 // const { name, age, email } = user;
 
-module.exports.createCaptain = async ({ firstname, lastname, email, password, color, plate, capacity, vechileType }) => {
-    console.log("Creating captain with details:", { firstname, lastname, email, color, plate, capacity, vechileType });
+module.exports.createCaptain = async ({ firstname, lastname, email, password, color, plate, capacity, vehicleType }) => {
+    console.log("Creating captain with details:", { firstname, lastname, email, color, plate, capacity, vehicleType });
 
-    if (!firstname || !lastname || !email || !password || !color || !plate || !capacity || !vechileType) {
+    if (!firstname || !lastname || !email || !password || !color || !plate || !capacity || !vehicleType) {
         throw new Error("All fields are required");
     }
     const captain = captainModel.create({
@@ -27,11 +27,11 @@ module.exports.createCaptain = async ({ firstname, lastname, email, password, co
         },
         email,
         password,
-        vechile: {
+        vehicle: {
             color,
             plate,
             capacity,
-            vechileType
+            vehicleType
         }
     })
     return captain;

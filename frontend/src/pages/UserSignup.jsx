@@ -1,5 +1,7 @@
-import React, { use, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios';
+import { UserDataContext } from '../context/userContext';
 // mb-1 is equla to 0.25 rem and 4px ,1 rem = 16px
 
 const UserSignup = () => {
@@ -8,21 +10,34 @@ const UserSignup = () => {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+    // <UserDataContext.Provider value={{ user, setUser }}> You are passing an object as the value. This object looks like:{ 
+    //   user: ...,      the actual user data (like email, name)
+    //   setUser: ...     the function to update the user data
+    // }  what you receive const { user, setUser } = React.useContext(UserContext);  . Then you are object desturing const { user, setUser } = contextValue; // destructured
 
-    const [userData, setUserData] = useState({})
 
-    const submitHandler = (e) => {
+    const { user, setUser } = React.useContext(UserDataContext);
+
+    const submitHandler = async (e) => {
         // when we submit the form the default behavior of the form is to reload the page, we prevent that by using e.preventDefault()
         e.preventDefault()
-        setUserData({
-            fullName: {
-                firstName: firstName,
-                lastName: lastName
+        const newUser = {
+            fullname: {
+                firstname: firstName,
+                lastname: lastName
             },
             email: email,
             password: password
-        })
-
+        }
+        // Axios sends this data newUser in the request body as JSON.
+        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser)
+        if (response.status === 201) {
+            const data = response.data;
+            setUser(data.user);
+            localStorage.setItem('token', data.token)
+            navigate('/home')
+        }
     }
     return (
         <div>
@@ -87,7 +102,7 @@ const UserSignup = () => {
                         <button
                             className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder:text-base'
                         >
-                            Login</button>
+                            Create account</button>
                         <p className='text-center'>Already have a account? <Link to={'/login'} className='text-blue-600'> Login here</Link> </p>
                     </form>
                 </div>

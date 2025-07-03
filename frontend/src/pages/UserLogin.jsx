@@ -1,21 +1,38 @@
 import React, { use, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { UserDataContext } from '../context/userContext';
 // mb-1 is equla to 0.25 rem and 4px ,1 rem = 16px
 
 const UserLogin = () => {
     //performing two bindings here, one for email and one for password
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const { user, setUser } = React.useContext(UserDataContext);
 
-    const [userData, setUserData] = useState({})
+    const navigate = useNavigate();
 
     const submitHandler = (e) => {
         // when we submit the form the default behavior of the form is to reload the page, we prevent that by using e.preventDefault()
         e.preventDefault()
-        setUserData({
+        const userData = {
             email: email,
             password: password
-        })
+        }
+        // Axios sends this data userData in the request body as JSON. here we use then because axios.post returns a promise
+        axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, userData)
+            .then((response) => {
+                if (response.status === 200) {
+                    const data = response.data
+                    setUser(data.user)
+                    localStorage.setItem('token', data.token)
+                    navigate('/home')
+                }
+            }).catch((err) => {
+                console.error(err);
+
+            })
     }
     return (
         <div className='p-7 h-screen flex flex-col justify-between'>

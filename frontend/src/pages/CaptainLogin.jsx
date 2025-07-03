@@ -1,21 +1,34 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import { CaptainDataContext } from '../context/CaptainContext';
+import axios from 'axios';
 // mb-1 is equla to 0.25 rem and 4px ,1 rem = 16px
 
 const CaptainLogin = () => {
+
     //performing two way bindings here, one for email and one for password
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+    const { setCaptain } = React.useContext(CaptainDataContext);
 
-    const [captainData, setCaptainData] = useState({})
 
-    const submitHandler = (e) => {
+    const submitHandler = async (e) => {
         // when we submit the form the default behavior of the form is to reload the page, we prevent that by using e.preventDefault()
         e.preventDefault()
-        setCaptainData({
+        const captainData = {
             email: email,
             password: password
-        })
+        }
+
+        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captainData)
+        if (response.status = 201) {
+            const data = response.data
+            setCaptain(data.captain)
+            localStorage.setItem('token', data.token)
+            navigate('/captain-home')
+        }
     }
     return (
         <div className='p-7 h-screen flex flex-col justify-between'>
